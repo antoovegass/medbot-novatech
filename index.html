@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MedBot – NovaTech | Modelo 3D</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#eef1f7;font-family:Arial}
+#i{position:fixed;z-index:2;left:18px;top:18px;background:#fffc;padding:12px 16px;border-radius:12px;box-shadow:0 3px 15px #0002}
+#i b{font-size:19px;color:#3942b5}#i small{color:#555}#h{position:fixed;z-index:2;right:18px;bottom:18px;background:#fffc;padding:9px 12px;border-radius:10px;color:#444}
+</style></head><body>
+<div id="i"><b>MEDBOT – NOVATECH</b><br><small>Modelo 3D conceptual · 50 × 35 × 35 cm aprox.</small></div>
+<div id="h">Arrastrá para girar · rueda para zoom · clic derecho para desplazar</div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161/build/three.module.js';
+import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.161/examples/jsm/controls/OrbitControls.js';
+const S=new THREE.Scene();S.background=new THREE.Color(0xf1f3f8);
+const C=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,.1,200);C.position.set(62,48,70);
+const R=new THREE.WebGLRenderer({antialias:true});R.setSize(innerWidth,innerHeight);R.setPixelRatio(Math.min(devicePixelRatio,2));R.shadowMap.enabled=true;document.body.appendChild(R.domElement);
+const O=new OrbitControls(C,R.domElement);O.target.set(0,27,0);O.enableDamping=true;
+S.add(new THREE.HemisphereLight(0xffffff,0x85899a,2.2));let L=new THREE.DirectionalLight(0xffffff,3);L.position.set(35,75,45);L.castShadow=true;S.add(L);
+const W=new THREE.MeshStandardMaterial({color:0xf1f1ef,roughness:.4}),D=new THREE.MeshStandardMaterial({color:0x17191e,roughness:.35}),B=new THREE.MeshStandardMaterial({color:0x08090b}),A=new THREE.MeshStandardMaterial({color:0x5968e8,roughness:.3}),M=new THREE.MeshStandardMaterial({color:0xb7bbc2,metalness:.5,roughness:.3}),G=new THREE.MeshStandardMaterial({color:0x62666e,roughness:.6});
+function box(x,y,z,m=W){let q=new THREE.Mesh(new THREE.BoxGeometry(x,y,z),m);q.castShadow=q.receiveShadow=true;return q}
+function cyl(r,h,m=D){let q=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,40),m);q.castShadow=q.receiveShadow=true;return q}
+function add(q,x,y,z,rx=0,ry=0,rz=0){q.position.set(x,y,z);q.rotation.set(rx,ry,rz);S.add(q)}
+const F=new THREE.Mesh(new THREE.PlaneGeometry(180,180),new THREE.MeshStandardMaterial({color:0xe2e5ec}));F.rotation.x=-Math.PI/2;F.position.y=-.2;F.receiveShadow=true;S.add(F);
+// base
+add(box(29,5,27,D),0,5,0);add(box(31,3,28,W),0,8,0);
+for(let x of[-17,17]){add(cyl(8,5,D),x,9,0,0,0,Math.PI/2);add(cyl(3,5.3,M),x,9,0,0,0,Math.PI/2)}
+add(cyl(4,4,D),0,3,11,Math.PI/2);add(cyl(3.4,3.5,D),0,3,-11,Math.PI/2);
+// body
+add(box(28,23,25,W),0,20,0);add(box(24,12,1.5,W),0,18,13);add(box(19,10,1.2,M),0,18,13.8);add(box(7,1,.8,D),0,21,14.5);
+for(let x of[-14.4,14.4])add(box(1.2,9,.7,A),x,23,13);
+for(let y=10;y<=15;y+=1.8)add(box(16,.6,.8,D),0,y,-12.8);
+// torso/head
+add(box(24,9,23,W),0,34,0);add(box(22,7,21,W),0,40,0);add(box(25,13,22,W),0,48,0);add(box(23,4,20,W),0,56,0);
+// display
+add(box(18,7,1.1,D),0,49,11.2);add(box(16,5.4,.45,B),0,49,11.9);
+let dm=new THREE.MeshStandardMaterial({color:0x11162a,emissive:0x202b78,emissiveIntensity:.5});add(box(15,4.2,.25,dm),0,49,12.15);
+// speaker
+add(cyl(4.2,.7,D),0,43,11.3,Math.PI/2);for(let i=0;i<8;i++){let a=i*Math.PI/4;add(cyl(.28,.8,B),Math.cos(a)*2.7,43+Math.sin(a)*2.7,11.7,Math.PI/2)}
+// top sensor
+add(cyl(1.2,2,B),-7,59,0);add(box(5,1.5,2,B),-3.5,60,0);
+// tray
+add(box(23,2,3,D),0,39,15);add(box(24,2,20,D),0,40.5,15);add(box(29,3,18,D),0,42,15.5);add(box(25,1.2,15,G),0,43.5,15.7);
+let ring=new THREE.Mesh(new THREE.TorusGeometry(3.8,.55,16,48),M);ring.rotation.x=Math.PI/2;ring.position.set(0,44.2,15.5);S.add(ring);add(cyl(2.7,.35,B),0,44.1,15.5);
+// pill dispenser
+add(box(20,10,8,W),0,27,-13.8);add(box(17,6,1.5,M),0,27,-18);add(box(7,1,.8,D),0,28.2,-18.8);add(cyl(1.2,1,B),8,31,-18,Math.PI/2);
+// ultrasonic + line sensors
+for(let x of[-6,6]){add(cyl(2,1.2,D),x,12.2,14.2,Math.PI/2);add(cyl(1.25,1.3,B),x,12.2,14.8,Math.PI/2)}
+for(let x of[-8,0,8])add(box(2.5,1.5,2,D),x,2.2,13.5);
+// visible internal stack / battery
+add(box(18,8,13,D),0,12,-3);for(let x of[-6,0,6])add(box(4.5,6,11,A),x,12,-3);add(box(15,2,11,new THREE.MeshStandardMaterial({color:0x145b45})),5,24,-4);add(box(12,2,9,A),5,27,-4);add(box(11,3,8,B),5,30,-4);
+function resize(){C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix();R.setSize(innerWidth,innerHeight)}addEventListener('resize',resize);
+(function a(){requestAnimationFrame(a);O.update();R.render(S,C)})();
+</script></body></html>
